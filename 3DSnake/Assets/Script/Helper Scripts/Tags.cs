@@ -12,7 +12,7 @@ public class Tags
 
 public class Metrics
 {
-    public static float NODE = 0.8f;
+    public static float NODE = 0.2f;
 }
 
 public enum PlayerDirection

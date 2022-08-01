@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,14 +31,21 @@ public class PlayerController : MonoBehaviour
         mainBody = GetComponent<Rigidbody>();
         InitSnakeNodes();
         InitPlayer();
+
+        delta_Position = new List<Vector3>() {
+            new Vector3(-step_Length, 0f),
+            new Vector3(0f, step_Length),
+            new Vector3(step_Length, 0f),
+            new Vector3(0f, -step_Length)
+        };
     }
 
     private void InitSnakeNodes()
     {
         nodes = new List<Rigidbody>();
-        nodes.Add(tr.GetChild(0).GetChild(0).GetComponent<Rigidbody>());
-        nodes.Add(tr.GetChild(1).GetChild(0).GetComponent<Rigidbody>());
-        nodes.Add(tr.GetChild(2).GetChild(0).GetComponent<Rigidbody>());
+        nodes.Add(tr.GetChild(0).GetComponent<Rigidbody>());
+        nodes.Add(tr.GetChild(1).GetComponent<Rigidbody>());
+        nodes.Add(tr.GetChild(2).GetComponent<Rigidbody>());
 
         headBody = nodes[0];
     }
@@ -72,7 +80,27 @@ public class PlayerController : MonoBehaviour
         direction = (PlayerDirection) UnityEngine.Random.Range(0, (int) PlayerDirection.COUNT);
     }
 
-   
+    void Move()
+    {
+        Vector3 dPosition = delta_Position[(int) direction];
+        Vector3 parentPos = headBody.position;
+        Vector3 prevPosition;
+
+        mainBody.position = mainBody.position + dPosition;
+        headBody.position = headBody.position + dPosition;
+
+        for (int i = 1; i < nodes.Count; i++)
+        {
+            prevPosition = nodes[i].position;
+            nodes[i].position = parentPos;
+            parentPos = prevPosition;
+        }
+        if(createNodeAtTail)
+        {
+
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -82,6 +110,26 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        CheckMovementFrequency();
+    }
+
+    private void FixedUpdate()
+    {
+        if(move)
+        {
+            move = false;
+            Move();
+        }
+    }
+
+    private void CheckMovementFrequency()
+    {
+        counter += Time.deltaTime; 
+
+        if (counter >= movement_Frequency)
+        {
+            counter = 0;
+            move = true;
+        }
     }
 }
