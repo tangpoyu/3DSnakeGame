@@ -40,6 +40,24 @@ public class PlayerController : MonoBehaviour
         };
     }
 
+    public void SetInputDirection(PlayerDirection dir)
+    {
+        if (dir == PlayerDirection.UP && direction == PlayerDirection.DOWN ||
+           dir == PlayerDirection.DOWN && direction == PlayerDirection.UP ||
+           dir == PlayerDirection.LEFT && direction == PlayerDirection.RIGHT ||
+           dir == PlayerDirection.RIGHT && direction == PlayerDirection.LEFT) return;
+
+        direction = dir;
+        ForceMove();
+    }
+
+    private void ForceMove()
+    {
+        counter = 0;
+        move = false;
+        Move();
+    }
+
     private void InitSnakeNodes()
     {
         nodes = new List<Rigidbody>();
