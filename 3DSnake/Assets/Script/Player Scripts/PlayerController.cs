@@ -115,7 +115,10 @@ public class PlayerController : MonoBehaviour
         }
         if(createNodeAtTail)
         {
-
+            createNodeAtTail = false;
+            GameObject newNode = Instantiate(tailPrefab, nodes[nodes.Count - 1].position, Quaternion.identity);
+            newNode.transform.SetParent(transform, true);
+            nodes.Add(newNode.GetComponent<Rigidbody>());
         }
     }
 
@@ -148,6 +151,23 @@ public class PlayerController : MonoBehaviour
         {
             counter = 0;
             move = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider target)
+    {
+        if (target.tag == Tags.FRUIT)
+        {
+            Destroy(target.gameObject);
+            createNodeAtTail = true;
+            GameplayController.instance.IncreaseScore();
+            AudioManager.instance.PlayPickUpSound();
+        }
+        if (target.tag == Tags.WALL || target.tag == Tags.BOMB || target.tag == Tags.TAIL)
+        {
+            AudioManager.instance.PlayDeadSound();
+            Time.timeScale = 0f;
+         
         }
     }
 }
